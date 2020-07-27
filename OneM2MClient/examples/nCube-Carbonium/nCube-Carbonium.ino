@@ -102,7 +102,7 @@ queue_t noti_q;
 queue_t upload_q;
 
 String body_str = "";
-String body_str2 = "";
+//String body_str2 = "";
 
 char resp_topic[48];
 char noti_topic[48];
@@ -618,18 +618,18 @@ void publisher() {
             Serial.println(String(req_id));
             nCube_State = NCUBE_REQUESTING;
             body_str = nCube.createAE(mqtt, req_id, 0, "3.14");
-            body_str2 = nCube.createAE(mqtt, req_id, 0, "3.14");
+            //body_str2 = nCube.createAE(mqtt, req_id, 0, "3.14");
 
-            if (body_str == "0") {
-            Serial.println(F("REQUEST Failed"));
-          }
-          else {
-            Serial.print("Request [");
-            Serial.print(nCube.getReqTopic());
-            Serial.print("] ----> ");
-            Serial.println(body_str.length()+1);
-            Serial.println(body_str);
-          }
+            if (body_str == "0") {//body_str
+                Serial.println(F("REQUEST Failed"));
+            }
+            else {
+                Serial.print("Request [");
+                Serial.print(nCube.getReqTopic());
+                Serial.print("] ----> ");
+                Serial.println(body_str.length()+1);
+                Serial.println(body_str);
+            }
             //digitalWrite(ledPin, HIGH);
         }
         else if (state == "create_cnt") {
@@ -639,17 +639,17 @@ void publisher() {
             Serial.println(String(req_id));
             nCube_State = NCUBE_REQUESTING;
             body_str = nCube.createCnt(mqtt, req_id, sequence);
-            body_str2 = nCube.createCnt(mqtt, req_id, sequence);
-            if (body_str == "0") {
-            Serial.println(F("REQUEST Failed"));
-          }
-          else {
-            Serial.print("Request [");
-            Serial.print(nCube.getReqTopic());
-            Serial.print("] ----> ");
-            Serial.println(body_str.length()+1);
-            Serial.println(body_str);
-          }
+            //body_str2 = nCube.createCnt(mqtt, req_id, sequence);
+            if (body_str == "0") {//body_str
+                Serial.println(F("REQUEST Failed"));
+            }
+            else {
+                Serial.print("Request [");
+                Serial.print(nCube.getReqTopic());
+                Serial.print("] ----> ");
+                Serial.println(body_str.length()+1);
+                Serial.println(body_str);
+            }
             //digitalWrite(ledPin, HIGH);
         }
         else if (state == "delete_sub") {
@@ -659,17 +659,17 @@ void publisher() {
             Serial.println(String(req_id));
             nCube_State = NCUBE_REQUESTING;
             body_str = nCube.deleteSub(mqtt, req_id, sequence);
-            body_str2 = nCube.deleteSub(mqtt, req_id, sequence);
+            //body_str2 = nCube.deleteSub(mqtt, req_id, sequence);
             if (body_str == "0") {
-            Serial.println(F("REQUEST Failed"));
-          }
-          else {
-            Serial.print("Request [");
-            Serial.print(nCube.getReqTopic());
-            Serial.print("] ----> ");
-            Serial.println(body_str.length()+1);
-            Serial.println(body_str);
-          }
+                Serial.println(F("REQUEST Failed"));
+            }
+            else {
+                Serial.print("Request [");
+                Serial.print(nCube.getReqTopic());
+                Serial.print("] ----> ");
+                Serial.println(body_str.length()+1);
+                Serial.println(body_str);
+            }
             //digitalWrite(ledPin, HIGH);
         }
         else if (state == "create_sub") {
@@ -679,17 +679,17 @@ void publisher() {
             Serial.println(String(req_id));
             nCube_State = NCUBE_REQUESTING;
             body_str = nCube.createSub(mqtt, req_id, sequence);
-            body_str2 = nCube.createSub(mqtt, req_id, sequence);
+            //body_str2 = nCube.createSub(mqtt, req_id, sequence);
             if (body_str == "0") {
-            Serial.println(F("REQUEST Failed"));
-          }
-          else {
-            Serial.print("Request [");
-            Serial.print(nCube.getReqTopic());
-            Serial.print("] ----> ");
-            Serial.println(body_str.length()+1);
-            Serial.println(body_str);
-          }
+                Serial.println(F("REQUEST Failed"));
+            }
+            else {
+                Serial.print("Request [");
+                Serial.print(nCube.getReqTopic());
+                Serial.print("] ----> ");
+                Serial.println(body_str.length()+1);
+                Serial.println(body_str);
+            }
             //digitalWrite(ledPin, HIGH);
         }
         else if (state == "create_cin") {
@@ -1025,26 +1025,27 @@ void uploadProcess() {
             Serial.println(String(upload_q.rqi[upload_q.pop_idx]));
             Serial.println(String(upload_q.ref[upload_q.pop_idx]));
             //Serial.println(String(upload_q.con[upload_q.pop_idx]));
+            
             body_str = nCube.createCin(mqtt, upload_q.rqi[upload_q.pop_idx], upload_q.ref[upload_q.pop_idx], upload_q.con[upload_q.pop_idx]);
             Serial.println("=====ty-4 : " + String(body_str));
 
-            body_str2 = nCube.createData(mqtt, upload_q.rqi[upload_q.pop_idx], upload_q.ref[upload_q.pop_idx], upload_q.con[upload_q.pop_idx]);
-            Serial.println("=====ty-6 : " + String(body_str2));
+            //body_str2 = nCube.createData(mqtt, upload_q.rqi[upload_q.pop_idx], upload_q.ref[upload_q.pop_idx], upload_q.con[upload_q.pop_idx]);
+            //Serial.println("=====ty-6 : " + String(body_str2));
             
             wifiClient.flush();
             //interrupts();
             if (body_str == "0") {
-            Serial.println(F("REQUEST Failed"));
-          }
-          else {
+                Serial.println(F("REQUEST Failed"));
+            }
+            else {
                 system_watchdog = 0;
-            Serial.print("Request [");
-            Serial.print(nCube.getReqTopic());
-            Serial.print("] ----> ");
-            Serial.println(body_str.length()+1);
-            Serial.println(body_str);
-            Serial.println(body_str2);
-          }
+                Serial.print("Request [");
+                Serial.print(nCube.getReqTopic());
+                Serial.print("] ----> ");
+                //Serial.println(body_str.length()+1);
+                //Serial.println(body_str);
+                Serial.println(body_str);
+            }
             //digitalWrite(ledPin, HIGH);
         }
     }
