@@ -102,7 +102,6 @@ queue_t noti_q;
 queue_t upload_q;
 
 String body_str = "";
-//String body_str2 = "";
 
 char resp_topic[48];
 char noti_topic[48];
@@ -119,6 +118,14 @@ unsigned long tvoc_generate_previousMillis = 0;
 unsigned long tvoc_generate_interval = base_generate_interval;
 unsigned long co2_generate_previousMillis = 0;
 unsigned long co2_generate_interval = base_generate_interval;
+const byte counterPin = 3;                 //dg52316 flowrate consts
+const byte counterInterrupt = 1; // = pin 3
+int pos = 0;    // variable to store the servo position
+
+
+
+
+
 
 // Information of CSE as Mobius with MQTT
 const String FIRMWARE_VERSION = "1.0.0.0";
@@ -142,6 +149,16 @@ TasLED tasLed;
 #include "TasCCS811.h"
 TasCCS811 TasCCSSensor;
 
+//dg52316: header file && instance define
+#include "FreqPeriodCounter.h"
+FreqPeriodCounter counter(counterPin, micros, 0);
+
+const byte counterPin = 3;
+const byte counterInterrupt = 1; // = pin 3
+
+
+
+
 
 // build tree of resource of oneM2M
 // hooN : make containers
@@ -153,9 +170,48 @@ void buildResource() {
     nCube.configResource(3, "/"+CB_NAME+"/"+AE_NAME, "led");             // Container resource
     nCube.configResource(3, "/"+CB_NAME+"/"+AE_NAME, "temp");            // Container resource
     //nCube.configResource(3, "/"+CB_NAME+"/"+AE_NAME, "tvoc");            // Container resource
+    nCube.configResource(3, "/"+CB_NAME+"/"+AE_NAME, "flowRate");     //dg52316
 
     nCube.configResource(23, "/"+CB_NAME+"/"+AE_NAME+"/update", "sub");  // Subscription resource
     nCube.configResource(23, "/"+CB_NAME+"/"+AE_NAME+"/led", "sub");     // Subscription resource
+}
+
+//dg52316: 수정해야함
+void flowRateGenProcess() {
+        if (state == "create_cin") {
+            String cnt = "flowRate";
+            String con = "\"?\"";
+            if(counter.ready()) {
+                windspeed = counter.hertz();
+                Serial.println(windspeed);
+                con = String(windspeed);
+                con = "\"" + con + "\"";
+
+                rand_str(rqi, 8);
+                upload_q.ref[upload_q.push_idx] = "/"+CB_NAME+"/"+AE_NAME+"/"+cnt;
+                upload_q.con[upload_q.push_idx] = con;
+                upload_q.rqi[upload_q.push_idx] = String(rqi);
+                upload_q.push_idx++;
+                if(upload_q.push_idx >= QUEUE_SIZE) {
+                    upload_q.push_idx = 0;
+                }
+                if(upload_q.push_idx == upload_q.pop_idx) {
+                    upload_q.pop_idx++;
+                    if(upload_q.pop_idx >= QUEUE_SIZE) {
+                        upload_q.pop_idx = 0;
+                    }
+                }
+
+                Serial.println("pop : " + String(upload_q.pop_idx));
+                Serial.println("push : " + String(upload_q.push_idx));
+
+
+                if(windspeed > 200) windspeed = 0;
+                Serial.println(windspeed);
+                delay(15);
+
+        }
+    }
 }
 
 // Period of generating sensor data
@@ -312,6 +368,11 @@ void notiProcess() {
 }
 //------------------------------------------------------------------------------
 
+// flowrate setup() function
+void counterISR()
+{ counter.poll();
+}
+
 void setup() { //처음 세팅
     // configure the LED pin for output mode
     pinMode(ledPin, OUTPUT);
@@ -339,6 +400,8 @@ void setup() { //처음 세팅
 
     // User Defined setup -------------------------------------------------------
     tasLed.init();
+
+     attachInterrupt(counterInterrupt, counterISR, CHANGE); //dg52316 flowrate setup()
 
     if(!TasCCSSensor.begin()) {
         Serial.println("Failed to start CCS811 sensor! Please check your wiring.");
@@ -392,6 +455,7 @@ void loop() {
     tempGenProcess();
     //tvoc는 뺐음
     //tvocGenProcess();
+    flowRateGenProcess(); //dg52316
 }
 
 //------------------------------------------------------------------------------
@@ -1025,13 +1089,13 @@ void uploadProcess() {
             Serial.println(String(upload_q.rqi[upload_q.pop_idx]));
             Serial.println(String(upload_q.ref[upload_q.pop_idx]));
             //Serial.println(String(upload_q.con[upload_q.pop_idx]));
-            
+
             body_str = nCube.createCin(mqtt, upload_q.rqi[upload_q.pop_idx], upload_q.ref[upload_q.pop_idx], upload_q.con[upload_q.pop_idx]);
             Serial.println("=====ty-4 : " + String(body_str));
 
             //body_str2 = nCube.createData(mqtt, upload_q.rqi[upload_q.pop_idx], upload_q.ref[upload_q.pop_idx], upload_q.con[upload_q.pop_idx]);
             //Serial.println("=====ty-6 : " + String(body_str2));
-            
+
             wifiClient.flush();
             //interrupts();
             if (body_str == "0") {
