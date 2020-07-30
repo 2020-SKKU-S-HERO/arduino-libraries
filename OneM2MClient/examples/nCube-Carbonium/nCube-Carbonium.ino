@@ -118,7 +118,7 @@ unsigned long tvoc_generate_previousMillis = 0;
 unsigned long tvoc_generate_interval = base_generate_interval;
 unsigned long co2_generate_previousMillis = 0;
 unsigned long co2_generate_interval = base_generate_interval;
-const byte counterPin = 3;                 //dg52316 flowrate consts
+const byte counterPin = 13;                 //dg52316 flowrate consts
 const byte counterInterrupt = 1; // = pin 3
 int pos = 0;    // variable to store the servo position
 
@@ -153,11 +153,6 @@ TasCCS811 TasCCSSensor;
 #include "FreqPeriodCounter.h"
 FreqPeriodCounter counter(counterPin, micros, 0);
 
-const byte counterPin = 3;
-const byte counterInterrupt = 1; // = pin 3
-
-
-
 
 
 // build tree of resource of oneM2M
@@ -178,6 +173,12 @@ void buildResource() {
 
 //dg52316: 수정해야함
 void flowRateGenProcess() {
+  unsigned long currentMillis = millis(); // 서버 작동 이후로 현재 밀리 세컨드 리턴
+   if (currentMillis - co2_generate_previousMillis >= co2_generate_interval) {
+     co2_generate_previousMillis = currentMillis;
+     co2_generate_interval = base_generate_interval + (random(1000));
+    Serial.println("========================Flow Rate Generate==============================");
+  unsigned long windspeed;
         if (state == "create_cin") {
             String cnt = "flowRate";
             String con = "\"?\"";
@@ -186,6 +187,9 @@ void flowRateGenProcess() {
                 Serial.println(windspeed);
                 con = String(windspeed);
                 con = "\"" + con + "\"";
+
+                char rqi[10];
+                //주어진 char 배열에 임의의 letter(0~9, a~z, A~Z)을 집어넣는 함수
 
                 rand_str(rqi, 8);
                 upload_q.ref[upload_q.push_idx] = "/"+CB_NAME+"/"+AE_NAME+"/"+cnt;
@@ -212,6 +216,7 @@ void flowRateGenProcess() {
 
         }
     }
+  }
 }
 
 // Period of generating sensor data
