@@ -120,8 +120,8 @@ unsigned long co2_generate_previousMillis = 0;
 unsigned long co2_generate_interval = base_generate_interval;
 unsigned long fR_generate_previousMillis = 0;
 unsigned long fR_generate_interval = base_generate_interval;
-const byte counterPin = 13;                 //dg52316 flowrate consts
-const byte counterInterrupt = 1; // = pin 3
+const byte counterPin = 20;                 //dg52316 flowrate consts
+const byte counterInterrupt = 6; // = pin 3
 int pos = 0;    // variable to store the servo position
 
 // Information of CSE as Mobius with MQTT
@@ -184,6 +184,7 @@ void flowRateGenProcess() {
                 Serial.println("====== Windspeed : "+ String(windspeed));
                 con = String(windspeed);
                 con = "\"" + con + "\"";
+
 
                 char rqi[10];
                 //주어진 char 배열에 임의의 letter(0~9, a~z, A~Z)을 집어넣는 함수
