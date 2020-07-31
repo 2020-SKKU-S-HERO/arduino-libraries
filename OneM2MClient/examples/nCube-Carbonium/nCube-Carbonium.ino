@@ -118,14 +118,11 @@ unsigned long tvoc_generate_previousMillis = 0;
 unsigned long tvoc_generate_interval = base_generate_interval;
 unsigned long co2_generate_previousMillis = 0;
 unsigned long co2_generate_interval = base_generate_interval;
+unsigned long fR_generate_previousMillis = 0;
+unsigned long fR_generate_interval = base_generate_interval;
 const byte counterPin = 13;                 //dg52316 flowrate consts
 const byte counterInterrupt = 1; // = pin 3
 int pos = 0;    // variable to store the servo position
-
-
-
-
-
 
 // Information of CSE as Mobius with MQTT
 const String FIRMWARE_VERSION = "1.0.0.0";
@@ -153,8 +150,6 @@ TasCCS811 TasCCSSensor;
 #include "FreqPeriodCounter.h"
 FreqPeriodCounter counter(counterPin, micros, 0);
 
-
-
 // build tree of resource of oneM2M
 // hooN : make containers
 void buildResource() {
@@ -173,18 +168,20 @@ void buildResource() {
 
 //dg52316: 수정해야함
 void flowRateGenProcess() {
-  unsigned long currentMillis = millis(); // 서버 작동 이후로 현재 밀리 세컨드 리턴
-   if (currentMillis - co2_generate_previousMillis >= co2_generate_interval) {
-     co2_generate_previousMillis = currentMillis;
-     co2_generate_interval = base_generate_interval + (random(1000));
-    Serial.println("========================Flow Rate Generate==============================");
-  unsigned long windspeed;
+    unsigned long currentMillis = millis(); // 서버 작동 이후로 현재 밀리 세컨드 리턴
+    if (currentMillis - fR_generate_previousMillis >= fR_generate_interval) {
+        fR_generate_previousMillis = currentMillis;
+        fR_generate_interval = base_generate_interval + (random(1000));
+        Serial.println("========================Flow Rate Generate==============================");
+        unsigned long windspeed;
         if (state == "create_cin") {
+            Serial.println("====== FR : after state checking ========");
             String cnt = "flowRate";
             String con = "\"?\"";
             if(counter.ready()) {
                 windspeed = counter.hertz();
-                Serial.println(windspeed);
+                if(windspeed > 200) windspeed = 0;
+                Serial.println("====== Windspeed : "+ String(windspeed));
                 con = String(windspeed);
                 con = "\"" + con + "\"";
 
@@ -208,15 +205,13 @@ void flowRateGenProcess() {
 
                 Serial.println("pop : " + String(upload_q.pop_idx));
                 Serial.println("push : " + String(upload_q.push_idx));
-
-
-                if(windspeed > 200) windspeed = 0;
-                Serial.println(windspeed);
                 delay(15);
-
+            }
+            else{
+                Serial.println("===== FR Sensor is not ready!!+++++");
+            }
         }
     }
-  }
 }
 
 // Period of generating sensor data
@@ -406,7 +401,7 @@ void setup() { //처음 세팅
     // User Defined setup -------------------------------------------------------
     tasLed.init();
 
-     attachInterrupt(counterInterrupt, counterISR, CHANGE); //dg52316 flowrate setup()
+    attachInterrupt(counterInterrupt, counterISR, CHANGE); //dg52316 flowrate setup()
 
     if(!TasCCSSensor.begin()) {
         Serial.println("Failed to start CCS811 sensor! Please check your wiring.");
@@ -434,7 +429,7 @@ void setup() { //처음 세팅
     String topic = "/oneM2M/resp/" + AE_ID + CSE_ID + "/json";
     topic.toCharArray(resp_topic, 64);
 
-  topic = "/oneM2M/req" + CSE_ID + "/" + AE_ID + "/json";
+    topic = "/oneM2M/req" + CSE_ID + "/" + AE_ID + "/json";
     topic.toCharArray(noti_topic, 64);
 
     nCube.Init(CSE_ID, MOBIUS_MQTT_BROKER_IP, AE_ID);
