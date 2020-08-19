@@ -105,6 +105,7 @@ String body_str = "";
 
 char resp_topic[48];
 char noti_topic[48];
+char led_topic[48]; //dg52316
 
 unsigned long system_watchdog = 0;
 
@@ -120,15 +121,15 @@ unsigned long co2_generate_previousMillis = 0;
 unsigned long co2_generate_interval = base_generate_interval;
 unsigned long fR_generate_previousMillis = 0;
 unsigned long fR_generate_interval = base_generate_interval;
-const byte counterPin = 20;                 //dg52316 flowrate consts
-const byte counterInterrupt = 6; // = pin 3
+const byte counterPin = A1;                 //dg52316 flowrate consts
+const byte counterInterrupt = A1; // = pin 3
 int pos = 0;    // variable to store the servo position
 
 // Information of CSE as Mobius with MQTT
 const String FIRMWARE_VERSION = "1.0.0.0";
 
 //=========== You need to change the AE_NAME =============
-String AE_NAME = "hooN";
+String AE_NAME = "dongwon";
 String AE_ID = "S" + AE_NAME;
 const String CSE_ID = "/Mobius2";
 const String CB_NAME = "Mobius";
@@ -432,6 +433,9 @@ void setup() { //처음 세팅
 
     topic = "/oneM2M/req" + CSE_ID + "/" + AE_ID + "/json";
     topic.toCharArray(noti_topic, 64);
+
+    topic = "ctrl/arduino"; // dg52316 led topic initialize
+    topic.toCharArray(led_topic,64);
 
     nCube.Init(CSE_ID, MOBIUS_MQTT_BROKER_IP, AE_ID);
     mqtt.setServer(MOBIUS_MQTT_BROKER_IP, MOBIUS_MQTT_BROKER_PORT);
@@ -871,8 +875,12 @@ void mqtt_reconnect() {
                         Serial.println(String(resp_topic) + " Successfully subscribed");
                     }
 
-                    if (mqtt.subscribe(noti_topic)) {
+                    if (mqtt.subscribe(noti_topic)) {  // dg52316 led_topic subscribed!!
                         Serial.println(String(noti_topic) + " Successfully subscribed");
+                    }
+
+                    if(mqtt.subscribe(led_topic)) {
+                        Serial.println(String(led_topic) + " Successfully subscribed");
                     }
 
                     MQTT_State = _MQTT_CONNECTED;
@@ -947,6 +955,14 @@ void mqtt_message_handler(char* topic_in, byte* payload, unsigned int length) {
         noti_handler(req_root["pc"]["m2m:sgn"]["sur"], req_root["rqi"], req_root["pc"]["m2m:sgn"]["nev"]["rep"]["m2m:cin"]["con"]);
 
         jsonBuffer.clear();
+    }
+    else if (topic=="ctrl/arduino"){
+        memset((char*)in_message, '\0', length+1);
+        memcpy((char*)in_message, payload, length);
+        JsonObject& led = jsonBuffer.parseObject(in_message);
+        Serial.println("______________________________________________topic_");
+
+      
     }
     //interrupts();
     system_watchdog = 0;
