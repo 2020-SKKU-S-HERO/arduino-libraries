@@ -1,3 +1,2 @@
-#define SECRET_SSID ""
-#define SECRET_PASS ""
-
+#define SECRET_SSID "SF Lab"
+#define SECRET_PASS "smartfactory"

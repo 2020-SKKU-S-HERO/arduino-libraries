@@ -22,19 +22,25 @@
  */
 #include <SPI.h>
 #include <WiFi101.h>
+#include <TasLED.h>
+
 
 #include "arduino_secrets.h" 
 ///////please enter your sensitive data in the Secret tab/arduino_secrets.h
 char ssid[] = SECRET_SSID;        // your network SSID (name)
 char pass[] = SECRET_PASS;    // your network password (use for WPA, or use as key for WEP)
 int keyIndex = 0;                 // your network key Index number (needed only for WEP)
+TasLED tasLed;
 
 int status = WL_IDLE_STATUS;
 WiFiServer server(80);
 
 void setup() {
+  WiFi.setPins(8,7,4,2);
+  
   Serial.begin(9600);      // initialize serial communication
-  pinMode(9, OUTPUT);      // set the LED pin mode
+  pinMode(13, OUTPUT);      // set the LED pin mode
+  tasLed.init();
 
   // check for the presence of the shield:
   if (WiFi.status() == WL_NO_SHIELD) {
@@ -79,8 +85,8 @@ void loop() {
             client.println();
 
             // the content of the HTTP response follows the header:
-            client.print("Click <a href=\"/H\">here</a> turn the LED on pin 9 on<br>");
-            client.print("Click <a href=\"/L\">here</a> turn the LED on pin 9 off<br>");
+            client.print("Click <a href=\"/H\">here</a> turn the LED on pin 13 on<br>");
+            client.print("Click <a href=\"/L\">here</a> turn the LED on pin 13 off<br>");
 
             // The HTTP response ends with another blank line:
             client.println();
@@ -97,10 +103,12 @@ void loop() {
 
         // Check to see if the client request was "GET /H" or "GET /L":
         if (currentLine.endsWith("GET /H")) {
-          digitalWrite(9, HIGH);               // GET /H turns the LED on
+          //digitalWrite(13, HIGH);               // GET /H turns the LED on
+          tasLed.setLED("1");
         }
         if (currentLine.endsWith("GET /L")) {
-          digitalWrite(9, LOW);                // GET /L turns the LED off
+          //digitalWrite(13, LOW);                // GET /L turns the LED off
+          tasLed.setLED("0");
         }
       }
     }
