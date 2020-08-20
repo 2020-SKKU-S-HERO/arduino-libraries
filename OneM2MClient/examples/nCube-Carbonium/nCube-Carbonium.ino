@@ -167,7 +167,7 @@ void buildResource() {
     nCube.configResource(23, "/"+CB_NAME+"/"+AE_NAME+"/led", "sub");     // Subscription resource
 }
 
-//dg52316: 수정해야함
+//dg52316: 수정완료
 void flowRateGenProcess() {
     unsigned long currentMillis = millis(); // 서버 작동 이후로 현재 밀리 세컨드 리턴
     if (currentMillis - fR_generate_previousMillis >= fR_generate_interval) {
@@ -875,11 +875,11 @@ void mqtt_reconnect() {
                         Serial.println(String(resp_topic) + " Successfully subscribed");
                     }
 
-                    if (mqtt.subscribe(noti_topic)) {  // dg52316 led_topic subscribed!!
+                    if (mqtt.subscribe(noti_topic)) {  
                         Serial.println(String(noti_topic) + " Successfully subscribed");
                     }
 
-                    if(mqtt.subscribe(led_topic)) {
+                    if(mqtt.subscribe(led_topic)) { // dg52316 led_topic subscribed!!
                         Serial.println(String(led_topic) + " Successfully subscribed");
                     }
 
@@ -911,14 +911,15 @@ void mqtt_reconnect() {
 void mqtt_message_handler(char* topic_in, byte* payload, unsigned int length) {
     String topic = String(topic_in);
 
-    Serial.print("Message arrived [");
-    Serial.print(topic);
+    Serial.print(" ( In mqtt_message_handler ) Message arrived ( from broker )[");
+    Serial.print("Topic: "+topic);
     Serial.print("] <---- ");
-    Serial.println(length);
-
+    Serial.println("Length: "+length);
+   
     for (unsigned int i = 0; i < length; i++) {
         Serial.print((char)payload[i]);
     }
+    
     Serial.println();
 
     //noInterrupts();
@@ -959,10 +960,19 @@ void mqtt_message_handler(char* topic_in, byte* payload, unsigned int length) {
     else if (topic=="ctrl/arduino"){
         memset((char*)in_message, '\0', length+1);
         memcpy((char*)in_message, payload, length);
-        JsonObject& led = jsonBuffer.parseObject(in_message);
-        Serial.println("______________________________________________topic_");
+        JsonObject& led_root = jsonBuffer.parseObject(in_message);
 
-      
+        if (!led_root.success()) {
+            Serial.println(F("led_root parseObject() failed"));
+            return;
+        }
+        
+        Serial.println("____topic matched_________________________");
+
+        wifiClient.flush();
+
+        jsonBuffer.clear();
+
     }
     //interrupts();
     system_watchdog = 0;
