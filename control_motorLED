@@ -28,10 +28,11 @@ void loop() {
 
 
   
-  if (Serial.available())
+  if (Serial.available()) //Server.available() 수정
   {
     
-    char runPlant = Serial.read();
+    char runPlant = Serial.read();   //runPlant에 mqtt 통신으로 1또는 0으로 char 형식으로 전송(제어)
+                                      //Server.read(); 수정
     
   
   if (runPlant == '0')
@@ -46,10 +47,12 @@ void loop() {
   }
   else if (runPlant == '1')
   {
+    int velocity = 255; //0~255
+    int light = 255;  //0~255
     Serial.println("1");
-    analogWrite(left, 255);
+    analogWrite(left, velocity);   
     digitalWrite(right,LOW);
-    analogWrite(redLED, 255);   
+    analogWrite(redLED, light);   
   }
   }
 
