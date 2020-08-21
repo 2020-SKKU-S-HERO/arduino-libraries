@@ -1,0 +1,56 @@
+#include <Servo.h>
+
+int left = 10;
+int right = 11;
+int redLED = 9;
+int blueLED = A3;
+int greenLED = A4;
+int servoPin = 9;
+
+Servo servo;
+
+int angle = 0;
+
+void setup() {
+  pinMode(left,OUTPUT);
+  pinMode(right,OUTPUT);
+  pinMode(redLED,OUTPUT);
+  pinMode(blueLED,OUTPUT);
+  pinMode(greenLED,OUTPUT);
+
+  servo.attach(servoPin);
+
+  Serial.begin(9600);
+
+}
+
+void loop() {
+
+
+  
+  if (Serial.available())
+  {
+    
+    char runPlant = Serial.read();
+    
+  
+  if (runPlant == '0')
+  {
+    Serial.println("0");
+    analogWrite(left, LOW);
+    digitalWrite(right,LOW);
+    analogWrite(redLED, 0);
+    analogWrite(blueLED, 0);
+    analogWrite(greenLED, 0);
+    servo.write(0);
+  }
+  else if (runPlant == '1')
+  {
+    Serial.println("1");
+    analogWrite(left, 255);
+    digitalWrite(right,LOW);
+    analogWrite(redLED, 255);   
+  }
+  }
+
+}
