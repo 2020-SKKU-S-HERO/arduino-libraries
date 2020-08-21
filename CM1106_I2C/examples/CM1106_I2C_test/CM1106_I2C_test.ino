@@ -3,6 +3,7 @@
 CM1106_I2C cm1106_i2c;
 
 void setup() {
+  Serial.println("sibal ::::::::::::::");
   cm1106_i2c.begin();
   Serial.begin(9600);
   delay(1000);
