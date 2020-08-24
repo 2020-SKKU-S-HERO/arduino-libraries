@@ -2,7 +2,7 @@
 //아래 for문이 1번 돌때마다 1을 서버에서 계속 넣어줘야 함
 // Serial.available을 Server.available로 바꿔서 수정해주세요.
 
-#include <Servo.h>
+#include <Servo.h>            //이거랑 아래에 FastLED는 아두이로에서 라이브러리 관리에 검색하면 나옴
 
 #include <FastLED.h>
 
