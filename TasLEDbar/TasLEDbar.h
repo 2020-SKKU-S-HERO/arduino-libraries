@@ -6,4 +6,4 @@ class TasLEDbar
         TasLEDbar();
         void init();
         void setLEDbar(String in_data);
-}
+};

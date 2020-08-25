@@ -157,6 +157,9 @@ FreqPeriodCounter counter(counterPin, micros, 0);
 #include "TasMotor.h"
 TasMotor tasMotor;
 
+#include "TasLEDbar.h"
+TasLEDbar tasLEDbar;
+
 // build tree of resource of oneM2M
 // hooN : make containers
 void buildResource() {
@@ -409,6 +412,7 @@ void setup() { //처음 세팅
     // User Defined setup -------------------------------------------------------
     tasLed.init();
     tasMotor.init();
+    tasLEDbar.init();
 
     attachInterrupt(counterInterrupt, counterISR, CHANGE); //dg52316 flowrate setup()
 
@@ -975,6 +979,8 @@ void mqtt_message_handler(char* topic_in, byte* payload, unsigned int length) {
 
         //tasLed.setLED(String(in_message));   // led 제어부분!! 0 : off / 1 : on
          tasMotor.setMotor(String(in_message));    // motor 제어부분!! 0 : off / 1 : on
+         tasLEDbar.setLEDbar(String(in_message));   // led 제어부분!! 0 : off / 1 : on
+         
 
         wifiClient.flush();
 

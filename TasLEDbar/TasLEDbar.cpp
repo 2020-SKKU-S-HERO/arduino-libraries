@@ -2,18 +2,17 @@
 
 #include "FastLED.h"
 
+#define LED_PIN  9
+#define  NUM_LEDS  33
+CRGB leds[NUM_LEDS];
+
 TasLEDbar::TasLEDbar()
 {
-    
+
 }
 
 void TasLEDbar::init()
 {
-    int LED_PIN = 9;
-    int NUM_LEDS = 33;
-
-    CRGB leds[NUM_LEDS];
-
     FastLED.addLeds<WS2812, LED_PIN, GRB>(leds, NUM_LEDS);
 }
 
@@ -27,7 +26,7 @@ void TasLEDbar::setLEDbar(String in_data)
             FastLED.show();
         }
     }
-    else if (onoff == "on")
+    else if (in_data == "on")
     {
         for (int i = 0; i < 33; i++)
         {
