@@ -15,13 +15,14 @@ void TasMotor::init(){
 }
 
 void TasMotor::setMotor(String in_data){
-    if(in_data == "0")
+    Serial.println("in_data: "+ in_data);
+    if(in_data == "off")
       {
-        analogWrite(left, LOW);
+        digitalWrite(left, LOW);
         digitalWrite(right, LOW);
         Serial.println("stop");
       }
-      else if(in_data == "1")
+      else if(in_data == "on")
       {
         analogWrite(left, 255);
         digitalWrite(right, LOW);
