@@ -1,7 +1,9 @@
 #include <TasLED.h>
 
+
 #include <Arduino.h>
 #include <SPI.h>
+
 
 /**
 Copyright (c) 2018, OCEAN
@@ -439,7 +441,7 @@ void setup() { //처음 세팅
     topic = "/oneM2M/req" + CSE_ID + "/" + AE_ID + "/json";
     topic.toCharArray(noti_topic, 64);
 
-    topic = "ctrl/arduino"; // dg52316 topic initialize
+    topic = "ctrl/서울/flow/arduino"; // dg52316 topic initialize
     topic.toCharArray(ctrl_topic,64);
 
 
@@ -964,7 +966,7 @@ void mqtt_message_handler(char* topic_in, byte* payload, unsigned int length) {
 
         jsonBuffer.clear();
     }
-    else if (topic=="ctrl/arduino"){
+    else if (topic=="ctrl/서울/flow/arduino"){
         memset((char*)in_message, '\0', length+1);
         memcpy((char*)in_message, payload, length);
         

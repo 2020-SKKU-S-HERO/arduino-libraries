@@ -3,9 +3,8 @@
 class TasMotor
 {
 public:
-  TasMotor();
-  bool init();
-  bool setMotor(char in_data);
+	TasMotor();
+	void init();
+	void setMotor(String in_data);
 
-
-}
+};
