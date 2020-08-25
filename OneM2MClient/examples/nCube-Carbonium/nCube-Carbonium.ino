@@ -105,8 +105,8 @@ String body_str = "";
 
 char resp_topic[48];
 char noti_topic[48];
-char led_topic[48]; //dg52316
-char motor_topic[48]; //dg52316
+char ctrl_topic[48]; //dg52316
+
 
 unsigned long system_watchdog = 0;
 
@@ -439,11 +439,9 @@ void setup() { //처음 세팅
     topic = "/oneM2M/req" + CSE_ID + "/" + AE_ID + "/json";
     topic.toCharArray(noti_topic, 64);
 
-    topic = "ctrl/arduino"; // dg52316 led topic initialize
-    topic.toCharArray(led_topic,64);
+    topic = "ctrl/arduino"; // dg52316 topic initialize
+    topic.toCharArray(ctrl_topic,64);
 
-    topic = "ctrl/motor/arduino"; // dg52316 motor topic initialize
-    topic.toCharArray(motor_topic,64);
 
     nCube.Init(CSE_ID, MOBIUS_MQTT_BROKER_IP, AE_ID);
     mqtt.setServer(MOBIUS_MQTT_BROKER_IP, MOBIUS_MQTT_BROKER_PORT);
@@ -887,14 +885,11 @@ void mqtt_reconnect() {
                         Serial.println(String(noti_topic) + " Successfully subscribed");
                     }
 
-                    if(mqtt.subscribe(led_topic)) { // dg52316 led_topic subscribed!!
-                        Serial.println(String(led_topic) + " Successfully subscribed");
+                    if(mqtt.subscribe(ctrl_topic)) { // dg52316 ctrl_topic subscribed!!
+                        Serial.println(String(ctrl_topic) + " Successfully subscribed");
                     }
 
-                    if(mqtt.subscribe(motor_topic)) { // dg52316 motor_topic subscribed!!
-                        Serial.println(String(motor_topic) + " Successfully subscribed");
-                    }
-
+               
                     MQTT_State = _MQTT_CONNECTED;
                     nCube.reset_heartbeat();
                 }
@@ -973,30 +968,18 @@ void mqtt_message_handler(char* topic_in, byte* payload, unsigned int length) {
         memset((char*)in_message, '\0', length+1);
         memcpy((char*)in_message, payload, length);
         
-        Serial.println("____led topic matched_________________________");
-        Serial.println("LED MESSAGE:::::::::::"+String(in_message));
+        Serial.println("____mqtt topic matched_________________________");
+        Serial.println("MESSAGE:::::::::::"+String(in_message));
 
-        tasLed.setLED(String(in_message));   // led 제어부분!! 0 : off / 1 : on
-
-        wifiClient.flush();
-
-        jsonBuffer.clear();
-
-    }
-    else if (topic=="ctrl/motor/arduino"){
-        memset((char*)in_message, '\0', length+1);
-        memcpy((char*)in_message, payload, length);
-        
-        Serial.println("____motor topic matched_________________________");
-        Serial.println("MOTOR MESSAGE:::::::::::"+String(in_message));
-
-       tasMotor.setMotor(String(in_message));    // motor 제어부분!! 0 : off / 1 : on
+        //tasLed.setLED(String(in_message));   // led 제어부분!! 0 : off / 1 : on
+         tasMotor.setMotor(String(in_message));    // motor 제어부분!! 0 : off / 1 : on
 
         wifiClient.flush();
 
         jsonBuffer.clear();
 
     }
+  
     //interrupts();
     system_watchdog = 0;
 }
