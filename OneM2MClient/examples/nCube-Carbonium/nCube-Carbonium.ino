@@ -418,10 +418,10 @@ void setup() { //처음 세팅
 
     if(!TasCCSSensor.begin()) {
         Serial.println("Failed to start CCS811 sensor! Please check your wiring.");
-        while(1) {
+      /*  while(1) {
             delay(100);
             tasLed.setLED(String(random(1, 8)));
-        }
+        }*/
     }
 
     //calibrate temperature sensor

@@ -32,13 +32,13 @@ void TasLEDbar::setLEDbar(String in_data)
         {
             leds[i] = CRGB(255,0,0);
             FastLED.show();
-            delay(40);
+//            delay(40);
         }
-        for(int i = 0; i < 33; i++)
+  /*    for(int i = 0; i < 33; i++)
         {
             leds[i] = CRGB(0,0,0);
             FastLED.show();
             delay(40);
-        }
+        }*/
     }
 }
