@@ -18,7 +18,7 @@ void TasMotor::setMotor(String in_data){
     Serial.println("in_data: "+ in_data);
     if(in_data == "off")
       {
-        digitalWrite(left, LOW);
+        analogWrite(left, LOW);
         digitalWrite(right, LOW);
         Serial.println("stop");
       }
