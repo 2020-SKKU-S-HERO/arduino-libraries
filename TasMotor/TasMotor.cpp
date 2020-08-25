@@ -1,38 +1,25 @@
 #include "TasMotor.h"
 
 bool TasMotor::init(){
-  int left = 13;
-  int right = 12;
+  int left = 10;
+  int right = 11;
   pinMode(left, OUTPUT);
   pinMode(right, OUTPUT);
 
 }
 
 bool TasMotor::setMotor(char in_data){
-    if(in_data == '1')
+    if(in_data == '0')
       {
-        analogWrite(left, 100);
-        digitalWrite(right, LOW);
-        Serial.println("left");
-      }
-      else if(in_data == '2')
-      {
-        digitalWrite(left, LOW);
-        digitalWrite(right, HIGH);
-        Serial.println("right");
-
-      }
-      else if(in_data == '3')
-      {
-        digitalWrite(left, LOW);
+        analogWrite(left, LOW);
         digitalWrite(right, LOW);
         Serial.println("stop");
       }
-      else if(in_data == '4')
+      else if(in_data == '1')
       {
-        digitalWrite(left, HIGH);
+        analogWrite(left, 255);
         digitalWrite(right, LOW);
-        Serial.println("right");
+        Serial.println("go");
 
       }
 }
