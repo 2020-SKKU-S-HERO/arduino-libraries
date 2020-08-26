@@ -237,6 +237,8 @@ void co2GenProcess() {
             String con = "\"?\"";
             if(TasCCSSensor.available()) {
                 if(!TasCCSSensor.readData()) {
+                    Serial.print("CO2: ");
+                    Serial.print(ccs.geteCO2());
                     con = String(TasCCSSensor.geteCO2()/10);
                     con = "\"" + con + "\"";
 
@@ -317,6 +319,8 @@ void tvocGenProcess() {
 
             if(TasCCSSensor.available()) {
                 if(!TasCCSSensor.readData()) {
+                    Serial.print("ppm, TVOC: ");
+                    Serial.println(ccs.getTVOC());
                     con = String(TasCCSSensor.getTVOC()/10);
                     con = "\"" + con + "\"";
 
@@ -426,8 +430,9 @@ void setup() { //처음 세팅
 
     //calibrate temperature sensor
     while(!TasCCSSensor.available());
-    float temp = TasCCSSensor.calculateTemperature();
-    TasCCSSensor.setTempOffset(temp - 25.0);
+    //float temp = TasCCSSensor.calculateTemperature();  //dg52316 해보고 안되면 되돌릴 것.
+    //TasCCSSensor.setTempOffset(temp - 25.0);
+    TasCCSSensor.setTempOffset(25.0);
 
     co2_generate_interval = base_generate_interval + (random(10)*1000);
     tvoc_generate_interval = base_generate_interval + (random(10)*1000);
@@ -470,8 +475,7 @@ void loop() {
     notiProcess();
     co2GenProcess();
     tempGenProcess();
-    //tvoc는 뺐음
-    //tvocGenProcess();
+    tvocGenProcess();
     flowRateGenProcess(); //dg52316
 }
 
@@ -887,7 +891,7 @@ void mqtt_reconnect() {
                         Serial.println(String(resp_topic) + " Successfully subscribed");
                     }
 
-                    if (mqtt.subscribe(noti_topic)) {  
+                    if (mqtt.subscribe(noti_topic)) {
                         Serial.println(String(noti_topic) + " Successfully subscribed");
                     }
 
@@ -895,7 +899,7 @@ void mqtt_reconnect() {
                         Serial.println(String(ctrl_topic) + " Successfully subscribed");
                     }
 
-               
+
                     MQTT_State = _MQTT_CONNECTED;
                     nCube.reset_heartbeat();
                 }
@@ -928,11 +932,11 @@ void mqtt_message_handler(char* topic_in, byte* payload, unsigned int length) {
     Serial.print("Topic: "+topic);
     Serial.print("] <---- ");
     Serial.println("Length: "+length);
-   
+
     for (unsigned int i = 0; i < length; i++) {
         Serial.print((char)payload[i]);
     }
-    
+
     Serial.println();
 
     //noInterrupts();
@@ -973,21 +977,21 @@ void mqtt_message_handler(char* topic_in, byte* payload, unsigned int length) {
     else if (topic=="ctrl/서울/flow/arduino"){
         memset((char*)in_message, '\0', length+1);
         memcpy((char*)in_message, payload, length);
-        
+
         Serial.println("____mqtt topic matched_________________________");
         Serial.println("MESSAGE:::::::::::"+String(in_message));
 
         //tasLed.setLED(String(in_message));   // led 제어부분!! 0 : off / 1 : on
          tasMotor.setMotor(String(in_message));    // motor 제어부분!! 0 : off / 1 : on
          tasLEDbar.setLEDbar(String(in_message));   // led 제어부분!! 0 : off / 1 : on
-         
+
 
         wifiClient.flush();
 
         jsonBuffer.clear();
 
     }
-  
+
     //interrupts();
     system_watchdog = 0;
 }
