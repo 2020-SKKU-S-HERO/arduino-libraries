@@ -67,3 +67,26 @@ Add nCube:Thyme for arduino to the Arduino Library
    + arduino의 WIFI 모듈을 확인하면 MAC 주소가 적혀있다. MAC 주소의 마지막 네 자리를 확인한다.
    + 휴대폰이나 노트북을 사용하여 'wifi101-XXXX'에 연결한다. XXXX는 MAC 주소의 마지막 네 자리이다.
    + SSID와 Password를 설정하여 연결한다.
+   <br>
+
+# 하드웨어 구성
+- 메인 개발 보드로 Adafruit Feather M0 Wifi 를 사용한다.
+- Adafruit Feather M0의 핀맵(pin map)은 다음과 같다.
+![adafruit_products_Feather_M0_Adalogger_v2 2-1](https://user-images.githubusercontent.com/55867737/91269487-2e960500-e7b2-11ea-8d9e-fb5234678efe.png)
+- A0 ~ A5는 아날로그핀, 숫자만 있는 부분은 디지털 핀이다. 숫자 앞에 '~'이 있으면 아날로그 핀으로도 사용 가능하다.
+- 모든 핀이 interrupt로 사용 가능하다.
+- 외부전력이 필요할 때에는 우측 상단에 optional lipoly battery라고 되어 있는 부분에 3.7V 리튬폴리버 배터리를 연결하거나 3.7V~4V 전원을 인가하면 된다. 다만 배터리가 아닌 전원을 연결했을 때에 micro 5pin을 연결하면 회로에 이상이 생길 수 있다. 배터리를 연결한 상태에서 마이크로5핀을 연결하면 배터리가 자동으로 충전된다.
+- 
+
+   <br>
+## 센싱부
+1. CCS811
+2. 풍속 센서 P2531-1
+   -
+3. CM1107
+
+## 제어부
+1. 메인 DC모터
+2. LED
+3. 서보모터
+<br>
