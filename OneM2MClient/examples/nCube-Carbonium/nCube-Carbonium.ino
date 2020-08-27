@@ -124,8 +124,7 @@ unsigned long co2_generate_previousMillis = 0;
 unsigned long co2_generate_interval = base_generate_interval;
 unsigned long fR_generate_previousMillis = 0;
 unsigned long fR_generate_interval = base_generate_interval;
-const byte counterPin = A1;                 //dg52316 flowrate consts
-const byte counterInterrupt = A1; // = pin 3
+
 int pos = 0;    // variable to store the servo position
 
 // Information of CSE as Mobius with MQTT
@@ -152,6 +151,8 @@ Adafruit_CCS811 TasCCSSensor;
 
 //dg52316: header file && instance define
 #include "FreqPeriodCounter.h"
+const byte counterPin = A0;                 //dg52316 flowrate consts
+const byte counterInterrupt = A0; // = pin 3
 FreqPeriodCounter counter(counterPin, micros, 0);
 
 #include "TasMotor.h"
@@ -185,7 +186,6 @@ void flowRateGenProcess() {
         Serial.println("========================Flow Rate Generate==============================");
         unsigned long windspeed;
         if (state == "create_cin") {
-            Serial.println("====== FR : after state checking ========");
             String cnt = "flowRate";
             String con = "\"?\"";
             if(counter.ready()) {
