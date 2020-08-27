@@ -147,8 +147,8 @@ OneM2MClient nCube;
 #include "TasLED.h"
 TasLED tasLed;
 
-#include "TasCCS811.h"
-TasCCS811 TasCCSSensor;
+#include "Adafruit_CCS811.h"
+Adafruit_CCS811 TasCCSSensor;
 
 //dg52316: header file && instance define
 #include "FreqPeriodCounter.h"
@@ -237,8 +237,7 @@ void co2GenProcess() {
             String con = "\"?\"";
             if(TasCCSSensor.available()) {
                 if(!TasCCSSensor.readData()) {
-                    Serial.print("CO2: ");
-                    Serial.print(ccs.geteCO2());
+                    Serial.println("========================CO2 Generate==============================: "+ String(TasCCSSensor.geteCO2()));
                     con = String(TasCCSSensor.geteCO2()/10);
                     con = "\"" + con + "\"";
 
@@ -320,7 +319,7 @@ void tvocGenProcess() {
             if(TasCCSSensor.available()) {
                 if(!TasCCSSensor.readData()) {
                     Serial.print("ppm, TVOC: ");
-                    Serial.println(ccs.getTVOC());
+                    Serial.println(TasCCSSensor.getTVOC());
                     con = String(TasCCSSensor.getTVOC()/10);
                     con = "\"" + con + "\"";
 
@@ -547,7 +546,7 @@ void WiFi_chkconnect() {
             Serial.println("beginProvision - WIFI_INIT");
 //            WiFi.beginProvision();
 //            WiFi.begin("KT_GiGA_2G_Wave2_7EB6", "2fzccxe418");
-            WiFi.begin("SF Lab", "smartfactory");
+            WiFi.begin("SF_Lab", "smartfactory");
 
             WIFI_State = WIFI_CONNECT;
             wifi_previousMillis = 0;

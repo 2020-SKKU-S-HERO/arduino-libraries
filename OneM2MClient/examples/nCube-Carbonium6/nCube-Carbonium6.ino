@@ -143,8 +143,8 @@ OneM2MClient nCube;
 #include "TasLED.h"
 TasLED tasLed;
 
-#include "TasCCS811.h"
-TasCCS811 TasCCSSensor;
+#include "Adafruit_CCS811.h"
+Adafruit_CCS811 TasCCSSensor;
 
 //dg52316: header file && instance define
 #include "FreqPeriodCounter.h"
