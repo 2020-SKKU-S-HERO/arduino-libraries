@@ -163,7 +163,7 @@ TasMotor tasMotor;
 TasLEDbar tasLEDbar;
 
 #include "TasServo.h"
-TasServo servo;
+TasServo tasServo;
 
 // build tree of resource of oneM2M
 // hooN : make containers
@@ -420,7 +420,7 @@ void setup() { //처음 세팅
     tasLed.init();
     tasMotor.init();
     tasLEDbar.init();
-    servo.init();
+    tasServo.init();
 
     attachInterrupt(counterInterrupt, counterISR, CHANGE); //dg52316 flowrate setup()
 
@@ -1007,8 +1007,8 @@ void mqtt_message_handler(char* topic_in, byte* payload, unsigned int length) {
         Serial.println("MESSAGE:::::::::::"+String(in_message));
 
         //tasLed.setLED(String(in_message));   // led 제어부분!! 0 : off / 1 : on
-         servo.setMotor(String(in_message));    // motor 제어부분!! 0 : off / 1 : on
-         
+         tasServo.setMotor(String(in_message));    // motor 제어부분!! 0 : off / 1 : on
+
         wifiClient.flush();
         jsonBuffer.clear();
     }
