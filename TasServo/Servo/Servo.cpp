@@ -294,6 +294,22 @@ void Servo::write(int value)
   this->writeMicroseconds(value);
 }
 
+void Servo::setMotor(String in_data){
+    Serial.println("Sub Motor in_data: "+ in_data);
+    if(in_data == "0")
+      {
+        myservo.write(0);       //서보모터의 각도를 0으로 한다.
+        delay(15);
+      }
+      else if(in_data == "1")
+      {
+        myservo.write(30);      //서보모터의 각도를 30으로 한다. 이 값은 시연을 해보고 수정해보도록 한다.
+        delay(15);
+      }
+}
+
+
+
 void Servo::writeMicroseconds(int value)
 {
   // calculate and store the values for the given channel

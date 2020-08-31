@@ -107,7 +107,8 @@ String body_str = "";
 
 char resp_topic[48];
 char noti_topic[48];
-char ctrl_topic[48]; //dg52316
+char main_topic[48]; //dg52316
+char sub_topic[48]; //hooN
 
 
 unsigned long system_watchdog = 0;
@@ -131,7 +132,7 @@ int pos = 0;    // variable to store the servo position
 const String FIRMWARE_VERSION = "1.0.0.0";
 
 //=========== You need to change the AE_NAME =============
-String AE_NAME = "dongwon";
+String AE_NAME = "hooN";
 String AE_ID = "S" + AE_NAME;
 const String CSE_ID = "/Mobius2";
 const String CB_NAME = "Mobius";
@@ -160,6 +161,9 @@ TasMotor tasMotor;
 
 #include "TasLEDbar.h"
 TasLEDbar tasLEDbar;
+
+#include "Servo.h"
+Servo servo;
 
 // build tree of resource of oneM2M
 // hooN : make containers
@@ -416,6 +420,7 @@ void setup() { //처음 세팅
     tasLed.init();
     tasMotor.init();
     tasLEDbar.init();
+    servo.init();
 
     attachInterrupt(counterInterrupt, counterISR, CHANGE); //dg52316 flowrate setup()
 
@@ -449,9 +454,11 @@ void setup() { //처음 세팅
     topic = "/oneM2M/req" + CSE_ID + "/" + AE_ID + "/json";
     topic.toCharArray(noti_topic, 64);
 
-    topic = "ctrl/서울/flow/arduino"; // dg52316 topic initialize
-    topic.toCharArray(ctrl_topic,64);
+    topic = "ctrl/서울/main/arduino"; // dg52316 topic initialize
+    topic.toCharArray(main_topic,64);
 
+    topic = "ctrl/서울/sub/arduino"; //hooN topic initialize
+    topic.toCharArray(sub_topic,64);
 
     nCube.Init(CSE_ID, MOBIUS_MQTT_BROKER_IP, AE_ID);
     mqtt.setServer(MOBIUS_MQTT_BROKER_IP, MOBIUS_MQTT_BROKER_PORT);
@@ -894,8 +901,12 @@ void mqtt_reconnect() {
                         Serial.println(String(noti_topic) + " Successfully subscribed");
                     }
 
-                    if(mqtt.subscribe(ctrl_topic)) { // dg52316 ctrl_topic subscribed!!
-                        Serial.println(String(ctrl_topic) + " Successfully subscribed");
+                    if(mqtt.subscribe(main_topic)) { // dg52316 main_topic subscribed!!
+                        Serial.println(String(main_topic) + " Successfully subscribed");
+                    }
+
+                    if(mqtt.subscribe(sub_topic)){  //hooN sub_topic subscribed
+                        Serial.println(String(sub_topic)+ " Successfully subscribed");
                     }
 
 
@@ -973,7 +984,7 @@ void mqtt_message_handler(char* topic_in, byte* payload, unsigned int length) {
 
         jsonBuffer.clear();
     }
-    else if (topic=="ctrl/서울/flow/arduino"){
+    else if (topic=="ctrl/서울/main/arduino"){
         memset((char*)in_message, '\0', length+1);
         memcpy((char*)in_message, payload, length);
 
@@ -986,11 +997,21 @@ void mqtt_message_handler(char* topic_in, byte* payload, unsigned int length) {
 
 
         wifiClient.flush();
-
         jsonBuffer.clear();
-
     }
+    else if (topic=="ctrl/서울/sub/arduino"){
+        memset((char*)in_message, '\0', length+1);
+        memcpy((char*)in_message, payload, length);
 
+        Serial.println("____mqtt topic matched_________________________");
+        Serial.println("MESSAGE:::::::::::"+String(in_message));
+
+        //tasLed.setLED(String(in_message));   // led 제어부분!! 0 : off / 1 : on
+         servo.setMotor(String(in_message));    // motor 제어부분!! 0 : off / 1 : on
+         
+        wifiClient.flush();
+        jsonBuffer.clear();
+    }
     //interrupts();
     system_watchdog = 0;
 }
