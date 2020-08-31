@@ -162,8 +162,8 @@ TasMotor tasMotor;
 #include "TasLEDbar.h"
 TasLEDbar tasLEDbar;
 
-#include "Servo.h"
-Servo servo;
+#include "TasServo.h"
+TasServo servo;
 
 // build tree of resource of oneM2M
 // hooN : make containers
@@ -420,7 +420,7 @@ void setup() { //처음 세팅
     tasLed.init();
     tasMotor.init();
     tasLEDbar.init();
-    //servo.init();
+    servo.init();
 
     attachInterrupt(counterInterrupt, counterISR, CHANGE); //dg52316 flowrate setup()
 
