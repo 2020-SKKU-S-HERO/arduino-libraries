@@ -454,10 +454,10 @@ void setup() { //처음 세팅
     topic = "/oneM2M/req" + CSE_ID + "/" + AE_ID + "/json";
     topic.toCharArray(noti_topic, 64);
 
-    topic = "ctrl/서울/main/arduino"; // dg52316 topic initialize
+    topic = "ctrl/병점/main/arduino"; // dg52316 topic initialize
     topic.toCharArray(main_topic,64);
 
-    topic = "ctrl/서울/sub/arduino"; //hooN topic initialize
+    topic = "ctrl/병점/sub/arduino"; //hooN topic initialize
     topic.toCharArray(sub_topic,64);
 
     nCube.Init(CSE_ID, MOBIUS_MQTT_BROKER_IP, AE_ID);
@@ -553,7 +553,7 @@ void WiFi_chkconnect() {
             Serial.println("beginProvision - WIFI_INIT");
 //            WiFi.beginProvision();
 //            WiFi.begin("KT_GiGA_2G_Wave2_7EB6", "2fzccxe418");
-            WiFi.begin("SF_Lab", "smartfactory");
+            WiFi.begin("으히히히히히", "hothothot111");
 
             WIFI_State = WIFI_CONNECT;
             wifi_previousMillis = 0;
@@ -984,7 +984,7 @@ void mqtt_message_handler(char* topic_in, byte* payload, unsigned int length) {
 
         jsonBuffer.clear();
     }
-    else if (topic=="ctrl/서울/main/arduino"){
+    else if (topic=="ctrl/병점/main/arduino"){
         memset((char*)in_message, '\0', length+1);
         memcpy((char*)in_message, payload, length);
 
@@ -999,7 +999,7 @@ void mqtt_message_handler(char* topic_in, byte* payload, unsigned int length) {
         wifiClient.flush();
         jsonBuffer.clear();
     }
-    else if (topic=="ctrl/서울/sub/arduino"){
+    else if (topic=="ctrl/병점/sub/arduino"){
         memset((char*)in_message, '\0', length+1);
         memcpy((char*)in_message, payload, length);
 
