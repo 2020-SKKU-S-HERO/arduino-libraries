@@ -165,6 +165,9 @@ TasLEDbar tasLEDbar;
 #include "Servo.h"
 Servo tasServo;
 
+#include "TasFan.h"
+TasFan tasFan;
+
 // build tree of resource of oneM2M
 // hooN : make containers
 void buildResource() {
@@ -420,7 +423,8 @@ void setup() { //처음 세팅
     tasLed.init();
     tasMotor.init();
     tasLEDbar.init();
-    tasServo.init();
+    tasFan.init();
+    tasServo.attach(5);
 
     attachInterrupt(counterInterrupt, counterISR, CHANGE); //dg52316 flowrate setup()
 
@@ -988,12 +992,13 @@ void mqtt_message_handler(char* topic_in, byte* payload, unsigned int length) {
         memset((char*)in_message, '\0', length+1);
         memcpy((char*)in_message, payload, length);
 
-        Serial.println("____mqtt topic matched_________________________");
+        Serial.println("____mqtt main_topic matched_________________________");
         Serial.println("MESSAGE:::::::::::"+String(in_message));
 
         //tasLed.setLED(String(in_message));   // led 제어부분!! 0 : off / 1 : on
          tasMotor.setMotor(String(in_message));    // motor 제어부분!! 0 : off / 1 : on
          tasLEDbar.setLEDbar(String(in_message));   // led 제어부분!! 0 : off / 1 : on
+         tasFan.setFan(String(in_message));   // Fan 제어부분!! 0 : off / 1 : on
 
 
         wifiClient.flush();
@@ -1003,11 +1008,18 @@ void mqtt_message_handler(char* topic_in, byte* payload, unsigned int length) {
         memset((char*)in_message, '\0', length+1);
         memcpy((char*)in_message, payload, length);
 
-        Serial.println("____mqtt topic matched_________________________");
+        Serial.println("____mqtt sub_topic matched_________________________");
         Serial.println("MESSAGE:::::::::::"+String(in_message));
 
-        //tasLed.setLED(String(in_message));   // led 제어부분!! 0 : off / 1 : on
-         tasServo.setMotor(String(in_message));    // motor 제어부분!! 0 : off / 1 : on
+
+         if(String(in_message) == "off")  // motor 제어부분!! 0 : off / 1 : on
+         {
+           tasServo.write(0);       //서보모터의 각도를 0으로 한다.
+         }
+         else if(String(in_message) == "on")
+         {
+           tasServo.write(30);      //서보모터의 각도를 30으로 한다. 이 값은 시연을 해보고 수정해보도록 한다.
+         }
 
         wifiClient.flush();
         jsonBuffer.clear();

@@ -10,8 +10,7 @@ Servo myservo;
 void setup() {
   myservo.attach(5); //서보모터 어느 핀에 꽂을건지 설정 여기서는 5번핀
   Serial.begin(9600);
-
-  
+ 
 
   Serial.println("Servo start");
 
