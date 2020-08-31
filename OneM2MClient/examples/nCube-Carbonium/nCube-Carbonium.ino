@@ -162,8 +162,8 @@ TasMotor tasMotor;
 #include "TasLEDbar.h"
 TasLEDbar tasLEDbar;
 
-#include "TasServo.h"
-TasServo tasServo;
+#include "Servo.h"
+Servo tasServo;
 
 // build tree of resource of oneM2M
 // hooN : make containers

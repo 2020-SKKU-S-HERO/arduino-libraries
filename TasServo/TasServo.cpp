@@ -45,7 +45,7 @@
 #include <avr/interrupt.h>
 #include <Arduino.h> 
 
-#include "Servo.h"
+#include "TasServo.h"
 
 #define usToTicks(_us)    (( clockCyclesPerMicrosecond()* _us) / 8)     // converts microseconds to tick (assumes prescale of 8)  // 12 Aug 2009
 #define ticksToUs(_ticks) (( (unsigned)_ticks * 8)/ clockCyclesPerMicrosecond() ) // converts from ticks back to microseconds
@@ -242,7 +242,7 @@ static boolean isTimerActive(timer16_Sequence_t timer)
 
 /****************** end of static functions ******************************/
 
-TasServo::Servo()
+TasServo::TasServo()
 {
   if( ServoCount < MAX_SERVOS) {
     this->servoIndex = ServoCount++;                    // assign a servo index to this instance
@@ -336,12 +336,12 @@ void TasServo::writeMicroseconds(int value)
   } 
 }
 
-int TasServo::read() // return the value as degrees
+int Servo::read() // return the value as degrees
 {
   return  map( this->readMicroseconds()+1, SERVO_MIN(), SERVO_MAX(), 0, 180);     
 }
 
-int TasServo::readMicroseconds()
+int Servo::readMicroseconds()
 {
   unsigned int pulsewidth;
   if( this->servoIndex != INVALID_SERVO )
@@ -352,7 +352,7 @@ int TasServo::readMicroseconds()
   return pulsewidth;   
 }
 
-bool TasServo::attached()
+bool Servo::attached()
 {
   return servos[this->servoIndex].Pin.isActive ;
 }
