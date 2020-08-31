@@ -420,7 +420,7 @@ void setup() { //처음 세팅
     tasLed.init();
     tasMotor.init();
     tasLEDbar.init();
-    servo.init();
+    //servo.init();
 
     attachInterrupt(counterInterrupt, counterISR, CHANGE); //dg52316 flowrate setup()
 
