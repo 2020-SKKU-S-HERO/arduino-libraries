@@ -9,10 +9,11 @@ TasFan::TasFan()
 
 void TasFan::init(){
   pinMode(fan, OUTPUT);
-  Serial.println("fan start");
+  //Serial.println("fan start");
 }
 
 void TasFan::setFan(String in_data){
+  Serial.println("Fan Start!!");
   if(in_data == "off")
  {
    Serial.println("off");

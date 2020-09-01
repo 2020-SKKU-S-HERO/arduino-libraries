@@ -117,10 +117,10 @@ unsigned long system_watchdog = 0;
 // User Define
 // Period of Sensor Data, can make more
 const unsigned long base_generate_interval = 20 * 1000;
-unsigned long temp_generate_previousMillis = 0;
-unsigned long temp_generate_interval = base_generate_interval;
-unsigned long tvoc_generate_previousMillis = 0;
-unsigned long tvoc_generate_interval = base_generate_interval;
+//unsigned long temp_generate_previousMillis = 0;
+//unsigned long temp_generate_interval = base_generate_interval;
+//unsigned long tvoc_generate_previousMillis = 0;
+//unsigned long tvoc_generate_interval = base_generate_interval;
 unsigned long co2_generate_previousMillis = 0;
 unsigned long co2_generate_interval = base_generate_interval;
 unsigned long fR_generate_previousMillis = 0;
@@ -139,6 +139,7 @@ const String CB_NAME = "Mobius";
 const char* MOBIUS_MQTT_BROKER_IP = "34.64.238.233";//Server IP
 //"192.168.33.86";
 const uint16_t MOBIUS_MQTT_BROKER_PORT = 1883;
+
 
 //"OneM2MClient.h 에 있음"
 OneM2MClient nCube;
@@ -165,6 +166,9 @@ TasLEDbar tasLEDbar;
 #include "Servo.h"
 Servo tasServo;
 
+#include "TasFan.h"
+TasFan tasFan;
+
 // build tree of resource of oneM2M
 // hooN : make containers
 void buildResource() {
@@ -173,7 +177,7 @@ void buildResource() {
     nCube.configResource(3, "/"+CB_NAME+"/"+AE_NAME, "update");          // Container resource
     nCube.configResource(3, "/"+CB_NAME+"/"+AE_NAME, "co2");             // Container resource
     nCube.configResource(3, "/"+CB_NAME+"/"+AE_NAME, "led");             // Container resource
-    nCube.configResource(3, "/"+CB_NAME+"/"+AE_NAME, "temp");            // Container resource
+    //nCube.configResource(3, "/"+CB_NAME+"/"+AE_NAME, "temp");            // Container resource
     //nCube.configResource(3, "/"+CB_NAME+"/"+AE_NAME, "tvoc");            // Container resource
     nCube.configResource(3, "/"+CB_NAME+"/"+AE_NAME, "flowRate");     //dg52316
 
@@ -187,7 +191,7 @@ void flowRateGenProcess() {
     if (currentMillis - fR_generate_previousMillis >= fR_generate_interval) {
         fR_generate_previousMillis = currentMillis;
         fR_generate_interval = base_generate_interval + (random(1000));
-        Serial.println("========================Flow Rate Generate==============================");
+        //Serial.println("========================Flow Rate Generate==============================");
         unsigned long windspeed;
         if (state == "create_cin") {
             String cnt = "flowRate";
@@ -242,7 +246,7 @@ void co2GenProcess() {
             if(TasCCSSensor.available()) {
                 if(!TasCCSSensor.readData()) {
                     Serial.println("========================CO2 Generate==============================: "+ String(TasCCSSensor.geteCO2()));
-                    con = String(TasCCSSensor.geteCO2()/10);
+                    con = String(TasCCSSensor.geteCO2());
                     con = "\"" + con + "\"";
 
                     char rqi[10];
@@ -272,7 +276,7 @@ void co2GenProcess() {
         }
     }
 }
-
+/*
 void tempGenProcess() {
     unsigned long currentMillis = millis();
     if (currentMillis - temp_generate_previousMillis >= temp_generate_interval) {
@@ -353,7 +357,7 @@ void tvocGenProcess() {
         }
     }
 }
-
+*/
 //이건 뭘까..?
 // Process notification of Mobius for control
 void notiProcess() {
@@ -398,7 +402,7 @@ void setup() { //처음 세팅
     //Initialize serial:
     Serial.begin(9600);
     //while(!Serial);
-
+    
     noti_q.pop_idx = 0;
     noti_q.push_idx = 0;
     upload_q.pop_idx = 0;
@@ -420,11 +424,11 @@ void setup() { //처음 세팅
     tasLed.init();
     tasMotor.init();
     tasLEDbar.init();
-    tasServo.init();
+    tasFan.init();
+    tasServo.attach(5);
 
     attachInterrupt(counterInterrupt, counterISR, CHANGE); //dg52316 flowrate setup()
-
-    /*
+/*
     if(!TasCCSSensor.begin()) {
         Serial.println("Failed to start CCS811 sensor! Please check your wiring.");
         while(1) {
@@ -437,12 +441,12 @@ void setup() { //처음 세팅
     while(!TasCCSSensor.available());
     //float temp = TasCCSSensor.calculateTemperature();  //dg52316 해보고 안되면 되돌릴 것.
     //TasCCSSensor.setTempOffset(temp - 25.0);
-    TasCCSSensor.setTempOffset(25.0);
+    //TasCCSSensor.setTempOffset(25.0);
 
     co2_generate_interval = base_generate_interval + (random(10)*1000);
-    tvoc_generate_interval = base_generate_interval + (random(10)*1000);
-    temp_generate_interval = base_generate_interval + (random(10)*1000);
-    
+    //tvoc_generate_interval = base_generate_interval + (random(10)*1000);
+    //temp_generate_interval = base_generate_interval + (random(10)*1000);
+
     delay(500);
     tasLed.setLED("0");
     */
@@ -450,11 +454,11 @@ void setup() { //처음 세팅
 
     delay(500);
 
-   // String topic = "/oneM2M/resp/" + AE_ID + CSE_ID + "/json";
-    //topic.toCharArray(resp_topic, 64);
+    String topic = "/oneM2M/resp/" + AE_ID + CSE_ID + "/json";
+    topic.toCharArray(resp_topic, 64);
 
-    //topic = "/oneM2M/req" + CSE_ID + "/" + AE_ID + "/json";
-    //topic.toCharArray(noti_topic, 64);
+    topic = "/oneM2M/req" + CSE_ID + "/" + AE_ID + "/json";
+    topic.toCharArray(noti_topic, 64);
 
     topic = "ctrl/병점/main/arduino"; // dg52316 topic initialize
     topic.toCharArray(main_topic,64);
@@ -555,7 +559,7 @@ void WiFi_chkconnect() {
             Serial.println("beginProvision - WIFI_INIT");
 //            WiFi.beginProvision();
 //            WiFi.begin("KT_GiGA_2G_Wave2_7EB6", "2fzccxe418");
-            WiFi.begin("으히히히히히", "hothothot111");
+            WiFi.begin("AndroidHotspot7343", "qqqqqqqq");
 
             WIFI_State = WIFI_CONNECT;
             wifi_previousMillis = 0;
@@ -990,13 +994,24 @@ void mqtt_message_handler(char* topic_in, byte* payload, unsigned int length) {
         memset((char*)in_message, '\0', length+1);
         memcpy((char*)in_message, payload, length);
 
-        Serial.println("____mqtt topic matched_________________________");
+        Serial.println("____mqtt main_topic matched_________________________");
         Serial.println("MESSAGE:::::::::::"+String(in_message));
 
         //tasLed.setLED(String(in_message));   // led 제어부분!! 0 : off / 1 : on
          tasMotor.setMotor(String(in_message));    // motor 제어부분!! 0 : off / 1 : on
          tasLEDbar.setLEDbar(String(in_message));   // led 제어부분!! 0 : off / 1 : on
-
+         tasFan.setFan(String(in_message));   // Fan 제어부분!! 0 : off / 1 : on
+/*
+         if(String(in_message) == "off")  // motor 제어부분!! 0 : off / 1 : on
+         {
+           analogWrite(A1, 0);       //서보모터의 각도를 0으로 한다.
+         }
+         else if(String(in_message) == "on")
+         {
+           analogWrite(A1, 255);      //서보모터의 각도를 30으로 한다. 이 값은 시연을 해보고 수정해보도록 한다.
+         }
+         
+*/
 
         wifiClient.flush();
         jsonBuffer.clear();
@@ -1005,11 +1020,18 @@ void mqtt_message_handler(char* topic_in, byte* payload, unsigned int length) {
         memset((char*)in_message, '\0', length+1);
         memcpy((char*)in_message, payload, length);
 
-        Serial.println("____mqtt topic matched_________________________");
+        Serial.println("____mqtt sub_topic matched_________________________");
         Serial.println("MESSAGE:::::::::::"+String(in_message));
 
-        //tasLed.setLED(String(in_message));   // led 제어부분!! 0 : off / 1 : on
-         tasServo.setMotor(String(in_message));    // motor 제어부분!! 0 : off / 1 : on
+
+         if(String(in_message) == "off")  // motor 제어부분!! 0 : off / 1 : on
+         {
+           tasServo.write(0);       //서보모터의 각도를 0으로 한다.
+         }
+         else if(String(in_message) == "on")
+         {
+           tasServo.write(30);      //서보모터의 각도를 30으로 한다. 이 값은 시연을 해보고 수정해보도록 한다.
+         }
 
         wifiClient.flush();
         jsonBuffer.clear();

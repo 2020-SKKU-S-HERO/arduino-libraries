@@ -117,10 +117,10 @@ unsigned long system_watchdog = 0;
 // User Define
 // Period of Sensor Data, can make more
 const unsigned long base_generate_interval = 20 * 1000;
-unsigned long temp_generate_previousMillis = 0;
-unsigned long temp_generate_interval = base_generate_interval;
-unsigned long tvoc_generate_previousMillis = 0;
-unsigned long tvoc_generate_interval = base_generate_interval;
+//unsigned long temp_generate_previousMillis = 0;
+//unsigned long temp_generate_interval = base_generate_interval;
+//unsigned long tvoc_generate_previousMillis = 0;
+//unsigned long tvoc_generate_interval = base_generate_interval;
 unsigned long co2_generate_previousMillis = 0;
 unsigned long co2_generate_interval = base_generate_interval;
 unsigned long fR_generate_previousMillis = 0;
@@ -139,6 +139,7 @@ const String CB_NAME = "Mobius";
 const char* MOBIUS_MQTT_BROKER_IP = "34.64.238.233";//Server IP
 //"192.168.33.86";
 const uint16_t MOBIUS_MQTT_BROKER_PORT = 1883;
+
 
 //"OneM2MClient.h 에 있음"
 OneM2MClient nCube;
@@ -176,7 +177,7 @@ void buildResource() {
     nCube.configResource(3, "/"+CB_NAME+"/"+AE_NAME, "update");          // Container resource
     nCube.configResource(3, "/"+CB_NAME+"/"+AE_NAME, "co2");             // Container resource
     nCube.configResource(3, "/"+CB_NAME+"/"+AE_NAME, "led");             // Container resource
-    nCube.configResource(3, "/"+CB_NAME+"/"+AE_NAME, "temp");            // Container resource
+    //nCube.configResource(3, "/"+CB_NAME+"/"+AE_NAME, "temp");            // Container resource
     //nCube.configResource(3, "/"+CB_NAME+"/"+AE_NAME, "tvoc");            // Container resource
     nCube.configResource(3, "/"+CB_NAME+"/"+AE_NAME, "flowRate");     //dg52316
 
@@ -190,7 +191,7 @@ void flowRateGenProcess() {
     if (currentMillis - fR_generate_previousMillis >= fR_generate_interval) {
         fR_generate_previousMillis = currentMillis;
         fR_generate_interval = base_generate_interval + (random(1000));
-        Serial.println("========================Flow Rate Generate==============================");
+        //Serial.println("========================Flow Rate Generate==============================");
         unsigned long windspeed;
         if (state == "create_cin") {
             String cnt = "flowRate";
@@ -245,7 +246,7 @@ void co2GenProcess() {
             if(TasCCSSensor.available()) {
                 if(!TasCCSSensor.readData()) {
                     Serial.println("========================CO2 Generate==============================: "+ String(TasCCSSensor.geteCO2()));
-                    con = String(TasCCSSensor.geteCO2()/10);
+                    con = String(TasCCSSensor.geteCO2());
                     con = "\"" + con + "\"";
 
                     char rqi[10];
@@ -275,7 +276,7 @@ void co2GenProcess() {
         }
     }
 }
-
+/*
 void tempGenProcess() {
     unsigned long currentMillis = millis();
     if (currentMillis - temp_generate_previousMillis >= temp_generate_interval) {
@@ -356,7 +357,7 @@ void tvocGenProcess() {
         }
     }
 }
-
+*/
 //이건 뭘까..?
 // Process notification of Mobius for control
 void notiProcess() {
@@ -401,7 +402,7 @@ void setup() { //처음 세팅
     //Initialize serial:
     Serial.begin(9600);
     //while(!Serial);
-
+    
     noti_q.pop_idx = 0;
     noti_q.push_idx = 0;
     upload_q.pop_idx = 0;
@@ -440,11 +441,11 @@ void setup() { //처음 세팅
     while(!TasCCSSensor.available());
     //float temp = TasCCSSensor.calculateTemperature();  //dg52316 해보고 안되면 되돌릴 것.
     //TasCCSSensor.setTempOffset(temp - 25.0);
-    TasCCSSensor.setTempOffset(25.0);
+    //TasCCSSensor.setTempOffset(25.0);
 
     co2_generate_interval = base_generate_interval + (random(10)*1000);
-    tvoc_generate_interval = base_generate_interval + (random(10)*1000);
-    temp_generate_interval = base_generate_interval + (random(10)*1000);
+    //tvoc_generate_interval = base_generate_interval + (random(10)*1000);
+    //temp_generate_interval = base_generate_interval + (random(10)*1000);
 
     delay(500);
     tasLed.setLED("0");
@@ -457,14 +458,13 @@ void setup() { //처음 세팅
 
     topic = "/oneM2M/req" + CSE_ID + "/" + AE_ID + "/json";
     topic.toCharArray(noti_topic, 64);
-
-    /*
+/*
     topic = "ctrl/병점/main/arduino"; // dg52316 topic initialize
     topic.toCharArray(main_topic,64);
 
     topic = "ctrl/병점/sub/arduino"; //hooN topic initialize
     topic.toCharArray(sub_topic,64);
-    */
+*/
     nCube.Init(CSE_ID, MOBIUS_MQTT_BROKER_IP, AE_ID);
     mqtt.setServer(MOBIUS_MQTT_BROKER_IP, MOBIUS_MQTT_BROKER_PORT);
     mqtt.setCallback(mqtt_message_handler);
@@ -485,8 +485,8 @@ void loop() {
     // user defined loop
     notiProcess();
     co2GenProcess();
-    tempGenProcess();
-    tvocGenProcess();
+    //tempGenProcess();
+    //tvocGenProcess();
     flowRateGenProcess(); //dg52316
 }
 
@@ -1026,8 +1026,8 @@ void mqtt_message_handler(char* topic_in, byte* payload, unsigned int length) {
         wifiClient.flush();
         jsonBuffer.clear();
     }
-    */
     //interrupts();
+    */
     system_watchdog = 0;
 }
 
