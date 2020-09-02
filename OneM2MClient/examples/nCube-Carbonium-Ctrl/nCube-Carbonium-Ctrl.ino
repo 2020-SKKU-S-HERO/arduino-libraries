@@ -402,7 +402,7 @@ void setup() { //처음 세팅
     //Initialize serial:
     Serial.begin(9600);
     //while(!Serial);
-    
+
     noti_q.pop_idx = 0;
     noti_q.push_idx = 0;
     upload_q.pop_idx = 0;
@@ -1001,7 +1001,7 @@ void mqtt_message_handler(char* topic_in, byte* payload, unsigned int length) {
          tasMotor.setMotor(String(in_message));    // motor 제어부분!! 0 : off / 1 : on
          tasLEDbar.setLEDbar(String(in_message));   // led 제어부분!! 0 : off / 1 : on
          tasFan.setFan(String(in_message));   // Fan 제어부분!! 0 : off / 1 : on
-/*
+/* //
          if(String(in_message) == "off")  // motor 제어부분!! 0 : off / 1 : on
          {
            analogWrite(A1, 0);       //서보모터의 각도를 0으로 한다.
@@ -1010,7 +1010,7 @@ void mqtt_message_handler(char* topic_in, byte* payload, unsigned int length) {
          {
            analogWrite(A1, 255);      //서보모터의 각도를 30으로 한다. 이 값은 시연을 해보고 수정해보도록 한다.
          }
-         
+
 */
 
         wifiClient.flush();
@@ -1026,11 +1026,13 @@ void mqtt_message_handler(char* topic_in, byte* payload, unsigned int length) {
 
          if(String(in_message) == "off")  // motor 제어부분!! 0 : off / 1 : on
          {
-           tasServo.write(0);       //서보모터의 각도를 0으로 한다.
+           tasServo.write(15);       //서보모터의 각도를 0으로 한다.
+           delay(15);
          }
          else if(String(in_message) == "on")
          {
-           tasServo.write(30);      //서보모터의 각도를 30으로 한다. 이 값은 시연을 해보고 수정해보도록 한다.
+           tasServo.write(45);      //서보모터의 각도를 30으로 한다. 이 값은 시연을 해보고 수정해보도록 한다.
+           delay(15);
          }
 
         wifiClient.flush();
