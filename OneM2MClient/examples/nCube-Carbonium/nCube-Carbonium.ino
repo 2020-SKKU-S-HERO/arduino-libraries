@@ -241,6 +241,7 @@ void co2GenProcess() {
         co2_generate_previousMillis = currentMillis;
         co2_generate_interval = base_generate_interval + (random(1000));
         if (state == "create_cin") {
+            Serial.println("Co2 Generation process start");
             String cnt = "co2";
             String con = "\"?\"";
             if(TasCCSSensor.available()) {
