@@ -557,8 +557,7 @@ void WiFi_chkconnect() {
 
             Serial.println("beginProvision - WIFI_INIT");
 //            WiFi.beginProvision();
-//            WiFi.begin("KT_GiGA_2G_Wave2_7EB6", "2fzccxe418");
-            WiFi.begin("AndroidHotspot7343", "qqqqqqqq");
+            WiFi.begin("Dosirak_104463", "19941182");
 
             WIFI_State = WIFI_CONNECT;
             wifi_previousMillis = 0;
